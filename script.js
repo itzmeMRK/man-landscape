@@ -1,23 +1,23 @@
-/* Updated script.js
-   Restored the original Three.js terrain behavior (as in your initial file),
-   with touch/small-screen detection to disable the 3D on phones,
-   plus the notify-form frontend logic kept intact.
+/* script.js
+ - Restored original green Three.js terrain (old animation feel)
+ - Touch/small-screen detection disables 3D for mobile
+ - IntersectionObserver reveals services with pop effect
+ - Badge pulse + micro-interaction
 */
 
 (() => {
   const container = document.getElementById('canvas-container');
   if (!container) return;
 
-  // device checks
+  // device checks (disable 3D on touch/small screens)
   const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
   const smallScreen = window.matchMedia && window.matchMedia('(max-width:600px)').matches;
   const disable3D = isTouch || smallScreen;
 
   if (disable3D) {
     container.style.display = 'none';
-    // still attach notify form handler below
   } else {
-    // --- Restored original terrain effect ---
+    // --- Restored original green terrain scene ---
     let scene, camera, renderer, plane;
     let mouseX = 0, mouseY = 0;
     let frame = 0;
@@ -51,20 +51,18 @@
       const geom = new THREE.PlaneGeometry(160, 140, cols, rows);
       geom.rotateX(-Math.PI / 2);
 
-      // set initial vertex colors (subtle green gradient)
+      // initial vertex colors: green palette
       const colors = [];
-      const topColor = new THREE.Color(0x1fd9a8);
-      const bottomColor = new THREE.Color(0x063a2e);
+      const topColor = new THREE.Color(0x14f0b0); // bright greenish
       for (let i = 0; i < geom.attributes.position.count; i++) {
-        // small randomness to colors to add natural variation
-        const t = (Math.random() * 0.18);
+        const t = (Math.random() * 0.16);
         colors.push(topColor.r + t, topColor.g + t, topColor.b + t);
       }
       geom.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
       const mat = new THREE.MeshStandardMaterial({
         vertexColors: true,
-        roughness: 0.85,
+        roughness: 0.86,
         metalness: 0.02,
         side: THREE.DoubleSide,
         transparent: true,
@@ -100,7 +98,7 @@
       const pos = plane.geometry.attributes.position;
       const count = pos.count;
 
-      // original style wave: combined sine + cosine using x & z coordinates
+      // original wave pattern
       for (let i = 0; i < count; i++) {
         const ix = i * 3;
         const x = pos.array[ix];
@@ -110,7 +108,7 @@
       pos.needsUpdate = true;
       plane.geometry.computeVertexNormals();
 
-      // subtle camera follow to mouse
+      // camera follow
       camera.position.x += (mouseX * 30 - camera.position.x) * 0.03;
       camera.position.y += (-mouseY * 20 + 26 - camera.position.y) * 0.03;
       camera.lookAt(0, 0, 0);
@@ -128,22 +126,20 @@
       container.style.display = 'none';
     }
 
-    // pause when tab hidden
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) cancelAnimationFrame(animId);
       else animId = requestAnimationFrame(animate);
     }, { passive: true });
   }
 
-  // --- UI behavior preserved: badge pulse toggle ---
+  // -------- UI: badge micro-interaction ----------
   const badge = document.getElementById('status-badge');
   if (badge) {
     badge.classList.add('pulse');
     badge.addEventListener('click', () => {
       const pressed = badge.getAttribute('aria-pressed') === 'true';
       badge.setAttribute('aria-pressed', (!pressed).toString());
-      if (!pressed) badge.classList.remove('pulse');
-      else badge.classList.add('pulse');
+      if (!pressed) badge.classList.remove('pulse'); else badge.classList.add('pulse');
       badge.animate([
         { transform: 'translateY(0) scale(1)' },
         { transform: 'translateY(-6px) scale(1.02)' },
@@ -152,44 +148,20 @@
     });
   }
 
-  // --- IntersectionObserver for services reveal (keeps pop effects) ---
+  // -------- reveal services with IntersectionObserver ----------
   const services = document.querySelectorAll('.service');
   if (services && services.length) {
     const obs = new IntersectionObserver((entries) => {
-      entries.forEach(ent => {
-        if (ent.isIntersecting) {
-          ent.target.classList.add('is-visible');
-          const idx = Array.from(services).indexOf(ent.target);
-          ent.target.style.transitionDelay = `${idx * 70}ms`;
-          obs.unobserve(ent.target);
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          const idx = Array.from(services).indexOf(entry.target);
+          entry.target.style.transitionDelay = `${idx * 70}ms`;
+          obs.unobserve(entry.target);
         }
       });
     }, { threshold: 0.18 });
 
     services.forEach(s => obs.observe(s));
-  }
-
-  // --- notify form front-end only ---
-  const form = document.getElementById('notify-form');
-  if (form) {
-    const emailInput = form.querySelector('input[type="email"]');
-    const msg = document.getElementById('notify-msg');
-    form.addEventListener('submit', (ev) => {
-      ev.preventDefault();
-      const email = (emailInput.value || '').trim();
-      if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-        msg.textContent = 'Please enter a valid email address.';
-        msg.style.color = '#ffb3b3';
-        return;
-      }
-      msg.textContent = 'Thanks! We will notify you when the site is live.';
-      msg.style.color = '#c9ffd9';
-      emailInput.value = '';
-      try {
-        let pending = JSON.parse(localStorage.getItem('maq_notify') || '[]');
-        pending.push({ email, ts: Date.now() });
-        localStorage.setItem('maq_notify', JSON.stringify(pending));
-      } catch (e) { /* ignore */ }
-    });
   }
 })();
