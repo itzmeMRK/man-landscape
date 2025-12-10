@@ -1,96 +1,142 @@
-/* Custom properties for easy color changes, inspired by the MAN Landscape logo green */
 :root {
-    --primary-green: #008000;
-    --secondary-green: #38a838;
-    --text-color: #333;
-    --glass-background: rgba(255, 255, 255, 0.1); /* Very light background for glass effect */
-    --padding-unit: 20px;
+    --brand-green: #1b5e20; /* Deep landscape green */
+    --brand-light: #4caf50; /* Vibrant leaf green */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --text-main: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    color: var(--text-color);
-    margin: 0;
-    /* 1. Background Image Setup */
-    background-image: url('placeholder-landscaping-image.jpg'); /* REPLACE WITH YOUR IMAGE URL */
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed; /* Makes the background image stay put when scrolling */
-    min-height: 100vh;
-    overflow-x: hidden; /* Prevent horizontal scrollbar */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-main);
+    background-color: #050505; /* Dark fallback if 3D fails */
+    overflow-x: hidden;
 }
 
-/* Ensure the main content is centered vertically and horizontally */
-.content-container {
-    /* Glassmorphism Implementation */
-    background-color: var(--glass-background);
-    backdrop-filter: blur(10px); /* The key glass effect property */
-    -webkit-backdrop-filter: blur(10px); /* Safari support */
-
-    /* Layout and Spacing */
-    padding: 60px 50px;
-    margin: 10vh auto 5vh auto; /* Center with margins, allow space for scrolling */
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Light border for the frosted look */
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
-    text-align: center;
-    max-width: 650px;
-    z-index: 10;
-}
-
-h1 {
-    color: #fff; /* Use white text for better contrast on blurred background */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Subtle shadow for readability */
-    font-size: 3em;
-    margin-bottom: 15px;
-    /* Adjusted styling for a cleaner look */
-    border-bottom: 4px solid var(--secondary-green);
-    padding-bottom: 10px;
-    display: inline-block;
-}
-
-h2 {
-    color: #fff;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-    font-size: 1.8em;
-    margin-top: 0;
-    margin-bottom: 40px;
-    font-weight: 300;
-}
-
-.description {
-    line-height: 1.7;
-    margin-bottom: 30px;
-    font-size: 1.15em;
-    color: #eee; /* Light text color for better contrast on glass */
-}
-
-.contact {
-    background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent box inside the glass */
-    color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    font-weight: bold;
-    line-height: 1.8;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.spacer {
-    height: 30vh; /* Adds vertical space to force scrolling */
-}
-
-footer {
+/* 3D Canvas Background fixed behind everything */
+#canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    text-align: center;
-    padding: 15px 0;
-    color: #ccc;
-    font-size: 0.9em;
-    z-index: 5;
-    background-color: rgba(0, 0, 0, 0.5); /* Dark transparent background for footer */
+    height: 100vh;
+    z-index: -1;
+    background: radial-gradient(circle at center, #112211 0%, #000000 100%);
 }
 
-footer a {
-    color: var(--secondary-green);
+main {
+    min-height: 150vh; /* Forces scrolling */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10vh;
+}
+
+/* Glassmorphism Card */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px); /* The "Frosted" effect */
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 700px;
+    width: 90%;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    animation: fadeIn 1.5s ease-out;
+}
+
+.brand-title {
+    font-size: 3rem;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.highlight {
+    color: var(--brand-light);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+.status-badge {
+    display: inline-block;
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 193, 7, 0.4);
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
+.content-body h3 {
+    border-left: 4px solid var(--brand-light);
+    padding-left: 10px;
+    margin: 2rem 0 1rem 0;
+    color: #fff;
+}
+
+.content-body p {
+    line-height: 1.6;
+    color: #e0e0e0;
+}
+
+.service-list {
+    list-style: none;
+    padding-left: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.service-list li {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #a5d6a7;
+}
+
+.contact-box {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--glass-border);
+    text-align: center;
+}
+
+.contact-box a {
+    color: var(--brand-light);
     text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.contact-box a:hover {
+    color: #fff;
+}
+
+.scroll-spacer {
+    height: 200px; /* Extra invisible space at bottom */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .brand-title { font-size: 2rem; }
+    .glass-card { padding: 1.5rem; }
 }
